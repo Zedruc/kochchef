@@ -1,0 +1,42 @@
+{
+  "name": "kochchef",
+  "version": "1.0.0",
+  "description": "Backend für eine Web Components + MariaDB Rezept Website im IT Kurs der AFS JG 2025/26",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "npm run dev",
+    "build": "node esbuild.config.js",
+    "dev": "nodemon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cookie-session": "^2.0.49",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.7.0",
+    "chalk": "^5.6.2",
+    "esbuild": "^0.25.10",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cookie-session": "^2.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "mariadb": "^3.4.5",
+    "uuid": "^13.0.0"
+  }
+}
