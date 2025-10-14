@@ -1,0 +1,11 @@
+POST http://localhost:8080/api/register HTTP/1.1
+Content-Type: application/json
+Cookie: joke=joemama
+
+{
+    "firstname": "John",
+    "surname": "Doe",
+    "username": "xX_joe_Xx",
+    "email": "jdoetherealone@mail.com",
+    "password": "53cur3p4ssw0rd"
+}

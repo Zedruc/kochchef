@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/chalk": "^0.4.31",
     "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.9",
