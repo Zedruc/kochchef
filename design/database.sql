@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   `surname` varchar(128),
   `username` varchar(128) UNIQUE,
   `email` varchar(128) UNIQUE,
-  `password` char(60) COMMENT '60 byte bcrypt hash'
+  `password` char(60) COMMENT '60 byte bcrypt hash',
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  `token` uuid NOT NULL DEFAULT UUID_v7()
 );
 
 CREATE TABLE IF NOT EXISTS `meal` (
