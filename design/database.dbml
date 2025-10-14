@@ -1,71 +1,71 @@
-table benutzer {
-  benutzer_id int [pk, increment]
-  vorname varchar(128)
-  nachname varchar(128)
+table user {
+  user_id int [pk, increment]
+  firstnar varchar(128)
+  surname varchar(128)
 
   username varchar(128) [unique]
   email varchar(128) [unique]
 
-  passwort char(60) [note: "60 byte bcrypt hash"]
+  password char(60) [note: "60 byte bcrypt hash"]
 }
 
-table bewertung {
-  benutzer_id int [not null, ref: < benutzer.benutzer_id]
-  inhalt varchar(1024)
-  sterne int
+table rating {
+  user_id int [not null, ref: < user.user_id]
+  content varchar(1024)
+  stars int
 
-  rezept_id int [not null, ref: < rezept.rezept_id]
+  recipe_id int [not null, ref: < recipe.recipe_id]
 
   indexes {
-    (benutzer_id, rezept_id) [pk, unique, note: "One review per recipe"]
+    (user_id, recipe_id) [pk, unique, note: "One review per recipe"]
   }
 
-  Note: 'CHECK (sterne BETWEEN 0 AND 5)'
+  Note: 'CHECK (stars BETWEEN 0 AND 5)'
 }
 
-table gericht {
-  gericht_id int [pk, increment]
+table meal {
+  meal_id int [pk, increment]
   name varchar(128) [not null, unique]
-  beschreibung varchar(512)
+  description varchar(512)
 }
 
-table gericht_alias {
+table meal_alias {
   name varchar(128) [not null]
-  gericht_id int [not null, ref: < gericht.gericht_id]
+  meal_id int [not null, ref: < meal.meal_id]
 
   indexes {
-    (gericht_id, name) [pk, note: "name zu lower() normalisieren"]
+    (meal_id, name) [pk, note: "name zu lower() normalisieren"]
   }
 }
 
-table rezept {
-  rezept_id int [pk, increment]
-  gericht_id int [not null, ref: < gericht.gericht_id]
+table recipe {
+  recipe_id int [pk, increment]
+  meal_id int [not null, ref: < meal.meal_id]
 
-  autor_id int [not null, ref: < benutzer.benutzer_id]
+  author_id int [not null, ref: < user.user_id]
 
   name varchar(128) [not null]
-  anweisung text [not null, note: "Vllt. Markdown?"]
+  instructions text [not null, note: "Vllt. Markdown?"]
 
   indexes {
-    (gericht_id, name) [unique, note: "name zu lower() normalisieren"]
-    (rezept_id) [note: "Schnellere Berechnung von AVG() über index"]
+    (meal_id, name) [unique, note: "name zu lower() normalisieren"]
+    (recipe_id) [note: "Schnellere Berechnung von AVG() über index"]
   }
 }
 
-table zutat {
-  zutat_id int [pk, increment]
-  name varchar(64) // never ever braucht eine Zutat mehr als 64 Buchstaben
-  preis decimal(6, 2)
+table ingredient {
+  ingredient_id int [pk, increment]
+  name varchar(64) // never ever braucht eine ingredient mehr als 64 Buchstaben
+  price decimal(6, 2)
 }
 
-table benoetigt {
-  rezept_id int [not null, ref: < rezept.rezept_id]
-  zutat_id int [not null, ref: < zutat.zutat_id]
-  menge decimal(6, 2) // bspw. (0)1.25 TL Zucker
-  einheit varchar(16) // TL, EL, mg, L, etc.
+table needed {
+  recipe_id int [not null, ref: < recipe.recipe_id]
+  ingredient_id int [not null, ref: < ingredient.ingredient_id]
+  amount decimal(6, 2) // bspw. (0)1.25 TL Zucker
+  unit varchar(16) // TL, EL, mg, L, etc.
 
   indexes {
-    (rezept_id, zutat_id) [pk]
+    (recipe_id, ingredient_id) [pk]
   }
 }
