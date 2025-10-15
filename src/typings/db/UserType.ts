@@ -6,18 +6,48 @@ interface DB_UserInsert {
     password: string; // bcrypt hash
 }
 
-interface User {
-    readonly user_id: number; // auto db pk
+const validInsertKeys = [
+    'firstname',
+    'surname',
+    'username',
+    'email',
+    'password'
+]
+
+interface DB_User {
+    readonly user_id: number;
     firstname: string;
     surname: string;
     username: string;
     email: string;
     password: string; // bcrypt hash
-    readonly created_at: Date; // auto db
-    readonly uuid: string; // auto db
+    readonly created_at: Date;
+    token: string; // sha256 hash
+}
+
+interface DB_UserPublic {
+    readonly user_id: number;
+    firstname: string;
+    surname: string;
+    username: string;
+    // filter email: string;
+    // filter password: string;
+    readonly created_at: Date;
+    token: string; // sha256 hash
+}
+
+function filterUserPublic(user: DB_User): DB_UserPublic {
+    let userPublic = user as Partial<DB_User>;
+    delete userPublic.email;
+    delete userPublic.password;
+    delete userPublic.token;
+
+    return userPublic as DB_UserPublic;
 }
 
 export {
     DB_UserInsert,
-    User
+    DB_User,
+    DB_UserPublic,
+    filterUserPublic
 }
