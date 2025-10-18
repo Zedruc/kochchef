@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 import { getCliArg } from "./helpers/cli_args";
 import chalk from "chalk";
-import { initDB } from "./helpers/db";
+import { initDB } from "./db";
 
 const app = express();
 

@@ -1,18 +1,14 @@
+// user types
+/////////////
+
 interface DB_UserInsert {
     firstname: string;
     surname: string;
     username: string;
     email: string;
     password: string; // bcrypt hash
+    token: string; // sha256 hash
 }
-
-const validInsertKeys = [
-    'firstname',
-    'surname',
-    'username',
-    'email',
-    'password'
-]
 
 interface DB_User {
     readonly user_id: number;
@@ -36,7 +32,7 @@ interface DB_UserPublic {
     token: string; // sha256 hash
 }
 
-function filterUserPublic(user: DB_User): DB_UserPublic {
+function filterUserPublic(user: DB_User | DB_UserInsert): DB_UserPublic {
     let userPublic = user as Partial<DB_User>;
     delete userPublic.email;
     delete userPublic.password;
@@ -45,9 +41,15 @@ function filterUserPublic(user: DB_User): DB_UserPublic {
     return userPublic as DB_UserPublic;
 }
 
+const DB_USER_VALID_INSERT_KEYS = [
+    'firstname',
+    'surname',
+    'username',
+    'email',
+    // 'password'
+]
+
 export {
-    DB_UserInsert,
-    DB_User,
-    DB_UserPublic,
-    filterUserPublic
-}
+    DB_User, DB_USER_VALID_INSERT_KEYS, DB_UserInsert, DB_UserPublic, filterUserPublic
+};
+

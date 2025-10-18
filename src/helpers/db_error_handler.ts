@@ -1,4 +1,4 @@
-import HttpStatusCode from "@/typings/HttpsStatusCode";
+import HttpStatusCode from "@/types/HttpsStatusCode";
 import { Response } from "express";
 
 function handleDbError(error: any, res: Response<any, Record<string, any>>) {
