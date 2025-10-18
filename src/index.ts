@@ -39,7 +39,7 @@ app.use(
     json()
 )
 
-import API_USER_ROUTE from "@/routes/user_auth";
+import API_USER_ROUTE from "@/routes/user";
 
 app.use("/api", API_USER_ROUTE);
 

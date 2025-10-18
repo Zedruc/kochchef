@@ -18,3 +18,27 @@ Content-Type: application/json
     "username": "xX_joe_Xx",
     "password": "53cur3p4ssw0rd"
 }
+
+### Updating
+PATCH http://localhost:8080/api/update HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "john_doe"
+}
+
+### Rejected update (password field included)
+PATCH http://localhost:8080/api/update HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "jane_doe",
+    "password": "mypass1234"
+}
+
+### Deleting
+DELETE http://localhost:8080/api/delete HTTP/1.1
+
+### Querying a user
+GET http://localhost:8080/api/john_doe HTTP/1.1
+Content-Type: application/json
