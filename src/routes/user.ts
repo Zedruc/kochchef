@@ -161,7 +161,7 @@ router.get("/:username", async (req, res) => {
 
     const user = await findUser(
         {username: username},
-        ["user_id", "firstname", "surname", "username", "created_at"]
+        ["user_id", "firstname", "surname", "username", "avatar", "created_at"]
     );
 
     if(!user) {

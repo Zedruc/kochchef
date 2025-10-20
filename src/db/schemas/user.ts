@@ -15,6 +15,7 @@ interface DB_User {
     firstname: string;
     surname: string;
     username: string;
+    avatar: string;
     email: string;
     password: string; // bcrypt hash
     readonly created_at: Date;
@@ -26,6 +27,7 @@ interface DB_UserPublic {
     firstname: string;
     surname: string;
     username: string;
+    avatar: string;
     // filter email: string;
     // filter password: string;
     readonly created_at: Date;

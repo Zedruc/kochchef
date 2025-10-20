@@ -41,7 +41,7 @@ app.use(
 
 import API_USER_ROUTE from "@/routes/user";
 
-app.use("/api", API_USER_ROUTE);
+app.use("/api/user", API_USER_ROUTE);
 
 app.listen(SERVER_PORT, (err) => {
     if(err) throw err;
