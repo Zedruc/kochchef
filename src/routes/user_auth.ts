@@ -11,7 +11,10 @@ import { v7 as uuid_v7 } from "uuid";
 
 const router = Router();
 
-async function findUser(criteria: Partial<DB_User>, toSelect: [keyof DB_User] | ['*']): Promise<DB_User | null> {
+async function findUser(
+    criteria: Partial<DB_User>,
+    toSelect: [keyof DB_User] | ["*"]
+): Promise<DB_User | null> {
     let users = await databaseSelect<DB_User>(
         toSelect,
         "user",
@@ -25,13 +28,13 @@ async function findUser(criteria: Partial<DB_User>, toSelect: [keyof DB_User] | 
 }
 
 async function userExists(token: string) {
-    let user = findUser({token: sha256(token)}, ["token"]);
+    let user = findUser({ token: sha256(token) }, ["token"]);
     return !!user;
 }
 
 router.post("/register", async (req, res) => {
     if (!req.body) {
-        console.log('No body');
+        console.log("No body");
 
         res.sendStatus(HttpStatusCode.BAD_REQUEST);
         return;
@@ -39,7 +42,13 @@ router.post("/register", async (req, res) => {
 
     const userValues: DB_UserInsert = req.body;
 
-    if (!userValues.firstname || !userValues.surname || !userValues.username || !userValues.email || !userValues.password) {
+    if (
+        !userValues.firstname ||
+        !userValues.surname ||
+        !userValues.username ||
+        !userValues.email ||
+        !userValues.password
+    ) {
         res.sendStatus(HttpStatusCode.BAD_REQUEST);
         return;
     }
@@ -50,7 +59,14 @@ router.post("/register", async (req, res) => {
     const userPasswordBcrypt = bcryptHashPassword(userValues.password);
 
     try {
-        await databaseInsert<DB_UserInsert>("user", Object.assign(userValues, {password: userPasswordBcrypt, token: userTokenHash}));
+        await databaseInsert<DB_UserInsert>("user", {
+            firstname: userValues.firstname,
+            surname: userValues.surname,
+            username: userValues.username,
+            email: userValues.email,
+            password: userPasswordBcrypt,
+            token: userTokenHash,
+        });
     } catch (error) {
         handleDbError(error, res);
         return;
@@ -80,19 +96,19 @@ router.get("/login", async (req, res) => {
             return;
         }
     }
-
+    
     // token but no user for it, try credentials if given
     if (!user && req.body) {
         const { username, password } = req.body;
-
+        
         user = await findUser({ username: username }, ["token"]);
-
+        
         if (!user) {
             res.sendStatus(HttpStatusCode.UNAUTHORIZED);
             return;
         }
-
-        if (compareSync(password, user.password)) token = user.token
+        
+        if (compareSync(password, user.password)) token = user.token;
         else {
             res.sendStatus(HttpStatusCode.UNAUTHORIZED);
             return;
@@ -101,16 +117,49 @@ router.get("/login", async (req, res) => {
 
     if (user) res.sendStatus(HttpStatusCode.OK);
     else res.sendStatus(HttpStatusCode.UNAUTHORIZED);
-
 });
 
-router.patch("/update", async (req, res) => {
+router.put("/logout", async (req, res) => {
+    const currentToken = req.signedCookies["token"];
+    if (!currentToken) {
+        res.sendStatus(HttpStatusCode.UNAUTHORIZED);
+        return;
+    }
+
+    /* const userAccount = databaseSelect<DB_User>(
+        ["token"],
+        "user",
+        ["token"],
+        [sha256(currentToken)]
+    }); */
+
+    const newTokenForNextLogin = uuid_v7();
+    const tokenHash = sha256(newTokenForNextLogin);
+
+    res.clearCookie("token", { signed: true });
+    const wasTokenRenewed = await databaseUpdate<DB_UserInsert>(
+        "user",
+        {
+            token: tokenHash
+        },
+        {
+            token: sha256(currentToken)
+        }
+    );
+
+    if (wasTokenRenewed) res.sendStatus(HttpStatusCode.OK);
+    else res.sendStatus(HttpStatusCode.INTERNAL_SERVER_ERROR);
+
+    return;
+});
+
+router.put("/update", async (req, res) => {
     const userToken = req.headers["token"] as string;
 
     const payload: Partial<DB_UserInsert> = req.body;
     const payloadKeys = Object.keys(payload);
 
-    if (payloadKeys.some(key => !DB_USER_VALID_INSERT_KEYS.includes(key))) {
+    if (payloadKeys.some((key) => !DB_USER_VALID_INSERT_KEYS.includes(key))) {
         res.sendStatus(HttpStatusCode.BAD_REQUEST);
         return;
     }
@@ -121,9 +170,11 @@ router.patch("/update", async (req, res) => {
     }
 
     try {
-        const wasUpdated = await databaseUpdate("user", payload, {token: sha256(userToken)});
+        const wasUpdated = await databaseUpdate("user", payload, {
+            token: sha256(userToken),
+        });
 
-        if(wasUpdated) res.sendStatus(HttpStatusCode.OK);
+        if (wasUpdated) res.sendStatus(HttpStatusCode.OK);
         else res.sendStatus(HttpStatusCode.NOT_MODIFIED);
 
         return;
@@ -140,7 +191,8 @@ router.delete("/delete", async (req, res) => {
         return;
     }
 
-    databaseDelete("user", {token: sha256(userToken)});
+    databaseDelete("user", { token: sha256(userToken) });
 });
+
 
 export = router;
