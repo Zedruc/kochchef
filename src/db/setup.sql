@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `firstname` varchar(128),
   `surname` varchar(128),
   `username` varchar(128) UNIQUE,
+  `avatar` varchar(512),
   `email` varchar(128) UNIQUE,
   `password` char(60) COMMENT '60 byte bcrypt hash',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -15,7 +16,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 CREATE TABLE IF NOT EXISTS `meal` (
   `meal_id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(128) UNIQUE NOT NULL,
-  `description` varchar(512)
+  `description` varchar(512),
+  `image` varchar(512)
 );
 
 CREATE TABLE IF NOT EXISTS `meal_alias` (
@@ -31,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `recipe` (
   `author_id` int NOT NULL,
   `name` varchar(128) NOT NULL,
   `instructions` text NOT NULL COMMENT 'Vllt. Markdown?',
+  `image` varchar(512),
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `recipe_meal_name` (`meal_id`, `name`),
   CONSTRAINT fk_recipe_meal FOREIGN KEY (`meal_id`) REFERENCES meal(`meal_id`),

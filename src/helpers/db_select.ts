@@ -33,6 +33,20 @@ async function databaseSelect<T>(
     }
 }
 
+async function findOne<T>(criteria: Partial<T>, toSelect: (keyof T)[] | ['*'], table: string): Promise<T | null> {
+    let entities = await databaseSelect<T>(
+        toSelect as string[],
+        table,
+        Object.keys(criteria),
+        Object.values(criteria)
+    );
+
+    if (!entities) return null;
+
+    return entities[0];
+}
+
 export {
-    databaseSelect
+    databaseSelect,
+    findOne
 }

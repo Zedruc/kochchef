@@ -48,7 +48,7 @@ async function databaseUpdate<T>(
         const whereClause = whereKeys.map(k => `${k} = ?`).join(" AND ");
 
         const sql = `UPDATE ${table} SET ${setClause} WHERE ${whereClause}`;
-        const [result] = await conn.query(sql, [...dataValues, ...whereValues]);
+        const result = await conn.query(sql, [...dataValues, ...whereValues]);
 
         return (result as any).affectedRows > 0;
     } finally {
@@ -73,7 +73,7 @@ async function databaseDelete<T>(
         const whereClause = whereKeys.map(k => `${k} = ?`).join(" AND ");
         const sql = `DELETE FROM ${table} WHERE ${whereClause}`;
 
-        const [result] = await conn.query(sql, whereValues);
+        const result = await conn.query(sql, whereValues);
         return (result as any).affectedRows > 0;
     } finally {
         conn.release();

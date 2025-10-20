@@ -1,4 +1,4 @@
-// user types
+// meal types
 /////////////
 
 interface DB_Meal {
@@ -17,4 +17,6 @@ const DB_MEAL_VALID_INSERT_KEYS = [
     "description"
 ]
 
-export {};
+export {
+    DB_Meal, DB_MealInsert, DB_MEAL_VALID_INSERT_KEYS
+};

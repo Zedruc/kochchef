@@ -1,4 +1,4 @@
-import { DB_USER_VALID_INSERT_KEYS } from "@/db/schemas/user";
+import { DB_USER_VALID_INSERT_KEYS, filterUserPublic } from "@/db/schemas/user";
 import { handleDbError } from "@/helpers/db_error_handler";
 import { bcryptHashPassword, sha256 } from "@/helpers/hashes";
 import { DB_User, DB_UserInsert, DB_UserPublic } from "@/db/schemas/user";
@@ -11,10 +11,7 @@ import { v7 as uuid_v7 } from "uuid";
 
 const router = Router();
 
-async function findUser(
-    criteria: Partial<DB_User>,
-    toSelect: [keyof DB_User] | ["*"]
-): Promise<DB_User | null> {
+async function findUser(criteria: Partial<DB_User>, toSelect: (keyof DB_User)[] | ['*']): Promise<DB_User | null> {
     let users = await databaseSelect<DB_User>(
         toSelect,
         "user",
@@ -31,6 +28,9 @@ async function userExists(token: string) {
     let user = findUser({ token: sha256(token) }, ["token"]);
     return !!user;
 }
+
+// auth and management related routes
+/////////////////////////////////////
 
 router.post("/register", async (req, res) => {
     if (!req.body) {
@@ -184,7 +184,7 @@ router.put("/update", async (req, res) => {
 });
 
 router.delete("/delete", async (req, res) => {
-    const userToken = req.headers["token"] as string;
+    const userToken = req.signedCookies["token"] as string;
 
     if (!userExists(userToken)) {
         res.sendStatus(HttpStatusCode.UNAUTHORIZED);
@@ -194,5 +194,31 @@ router.delete("/delete", async (req, res) => {
     databaseDelete("user", { token: sha256(userToken) });
 });
 
+
+// query route
+//////////////
+
+router.get("/:username", async (req, res) => {
+    const username = req.params.username;
+    const token = req.signedCookies["token"] as string;
+
+    if(!token || !(await findUser({ token: sha256(token) }, ["token"]))) {
+        res.sendStatus(HttpStatusCode.UNAUTHORIZED);
+        return;
+    }
+
+    const user = await findUser(
+        {username: username},
+        ["user_id", "firstname", "surname", "username", "avatar", "created_at"]
+    );
+
+    if(!user) {
+        res.sendStatus(HttpStatusCode.NOT_FOUND);
+        return;
+    }
+
+    res.json(user);
+    
+});
 
 export = router;
