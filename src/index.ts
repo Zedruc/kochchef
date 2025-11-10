@@ -40,8 +40,11 @@ app.use(
 )
 
 import API_USER_ROUTE from "@/routes/user";
+import API_ROOT_HANDLER from "@/routes/root";
+import { validateUserToken } from "./middleware/user_token_validator";
 
-app.use("/api/user", API_USER_ROUTE);
+app.use("/", API_ROOT_HANDLER);
+app.use("/api/user", validateUserToken, API_USER_ROUTE);
 
 app.listen(SERVER_PORT, (err) => {
     if(err) throw err;

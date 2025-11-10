@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { pool } from "../db";
 
 async function databaseSelect<T>(
@@ -9,17 +10,30 @@ async function databaseSelect<T>(
     if (whereKeys.length !== whereValues.length) return null;
 
     // validate to protect against sql injection
-    const isSafeIdentifier = (id: string) => /^[a-zA-Z0-9_\*]+$/.test(id);
-    if (!isSafeIdentifier(table)
-        ||  !(toSelect.every(isSafeIdentifier))
-        || !(whereKeys.every(isSafeIdentifier))
-        || !(whereValues.every(isSafeIdentifier))) {
-        throw new Error("Unsafe identifier in query");
+    const isSafeIdentifier = (id: string) => /^[a-zA-Z0-9_\-\*]+$/.test(id);
+
+    if (!isSafeIdentifier(table)) {
+        throw new Error(chalk.red(`Unsafe table name "${table}" in query`));
+    }
+    if (!toSelect.every(isSafeIdentifier)) {
+        throw new Error(
+            chalk.red(`Unsafe identifier in toSelect list\n  ${toSelect}`)
+        );
+    }
+    if (!whereKeys.every(isSafeIdentifier)) {
+        throw new Error(
+            chalk.red(`Unsafe identifier in whereKeys list\n  ${whereKeys}`)
+        );
+    }
+    if (!whereValues.every(isSafeIdentifier)) {
+        throw new Error(
+            chalk.red(`Unsafe identifier in whereValues list\n  ${whereValues}`)
+        );
     }
 
     const selectClause = toSelect.join(", ");
 
-    const whereClause = whereKeys.map(key => `${key} = ?`).join(" AND ");
+    const whereClause = whereKeys.map((key) => `${key} = ?`).join(" AND ");
 
     const sql = `SELECT ${selectClause} FROM ${table} WHERE ${whereClause}`;
 
@@ -33,7 +47,11 @@ async function databaseSelect<T>(
     }
 }
 
-async function findOne<T>(criteria: Partial<T>, toSelect: (keyof T)[] | ['*'], table: string): Promise<T | null> {
+async function findOne<T>(
+    criteria: Partial<T>,
+    toSelect: (keyof T)[] | ["*"],
+    table: string
+): Promise<T | null> {
     let entities = await databaseSelect<T>(
         toSelect as string[],
         table,
@@ -46,7 +64,4 @@ async function findOne<T>(criteria: Partial<T>, toSelect: (keyof T)[] | ['*'], t
     return entities[0];
 }
 
-export {
-    databaseSelect,
-    findOne
-}
+export { databaseSelect, findOne };

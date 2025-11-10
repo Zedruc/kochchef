@@ -26,15 +26,12 @@ async function initDB() {
     try {
         conn = await pool.getConnection(); // connection test
         
-        console.log(chalk.bold.green("✔️  MariaDB Connected"));
+        console.log(chalk.bold.green("MariaDB Connected"));
 
         const sqlFile = join(__dirname, "setup.sql");
         const sql = readFileSync(sqlFile, "utf-8");
 
         await conn.query(sql);
-
-        console.log(chalk.bold.green("MariaDB Setup Completed"));
-
     } catch (error) {
         console.log(chalk.bold.red("❌ MariaDB Error:"), error);
     } finally {

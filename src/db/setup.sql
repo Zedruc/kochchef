@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   `email` varchar(128) UNIQUE,
   `password` char(60) COMMENT '60 byte bcrypt hash',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `token` char(64) NOT NULL UNIQUE COMMENT '64 byte hex reprs. of SHA-256 of a uuid_v7'
+  `token` char(64) NOT NULL UNIQUE COMMENT '64 byte hex reprs. of SHA-256 of a uuid_v7',
+  `token_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `meal` (
@@ -67,3 +68,14 @@ CREATE TABLE IF NOT EXISTS `rating` (
   CONSTRAINT fk_rating_recipe FOREIGN KEY (`recipe_id`) REFERENCES recipe(`recipe_id`),
   CHECK (`stars` BETWEEN 0 AND 5)
 );
+
+-- update token timestamp when token changes
+DROP TRIGGER IF EXISTS update_token_timestamp;
+CREATE TRIGGER update_token_timestamp
+BEFORE UPDATE ON user
+FOR EACH ROW
+BEGIN
+    IF NEW.token <> OLD.token THEN
+    SET NEW.token_created_at = CURRENT_TIMESTAMP;
+    END IF;
+END;

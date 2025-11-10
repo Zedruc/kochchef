@@ -10,6 +10,7 @@ table user {
   email varchar(128) [unique]
   password char(60) [note: "60 byte bcrypt hash"]
   token char(64) [default: `SHA2(token, 256)`, note: "256 bits as hex digest, 4 bits per char = 64 characters"]
+  token_created_at timestampp [default: `CURRENT_TIMESTAMP`]
 }
 
 table rating {

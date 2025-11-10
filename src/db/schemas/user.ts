@@ -20,6 +20,7 @@ interface DB_User {
     password: string; // bcrypt hash
     readonly created_at: Date;
     token: string; // sha256 hash
+    readonly token_created_at: Date;
 }
 
 interface DB_UserPublic {
@@ -31,7 +32,7 @@ interface DB_UserPublic {
     // filter email: string;
     // filter password: string;
     readonly created_at: Date;
-    token: string; // sha256 hash
+    // token: string; // sha256 hash
 }
 
 function filterUserPublic(user: DB_User | DB_UserInsert): DB_UserPublic {
